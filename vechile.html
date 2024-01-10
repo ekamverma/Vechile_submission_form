@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* Reset some default styles to ensure consistency across browsers */
+        body, h1, h2, h3, p, input, button {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Apply a background color and font to the body */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        /* Style the container for entering details */
+        #enterDetails {
+            max-width: 400px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center; /* Center text within the container */
+        }
+
+        /* Style the heading */
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* Style the form elements */
+        h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Style the button */
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="enterDetails">
+        <h1>Enter details</h1>
+
+        <!-- Add date input -->
+        <h4>Date</h4>
+        <input id="enterDate" type="date">
+
+        <h4>Location</h4>
+        <input id="enterLocation" type="text">
+
+        <h4>Name</h4>
+        <input id="enterName" type="text">
+
+        <h4>Company</h4>
+        <input id="enterCompany" type="text"> <br><br>
+
+        <button id="insert">Submit</button> <br><br>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDtdKUaeOKTvE3aa-fvZlvS9hxyNbD7slY",
+            authDomain: "reports-511ff.firebaseapp.com",
+            databaseURL: "https://reports-511ff-default-rtdb.firebaseio.com",
+            projectId: "reports-511ff",
+            storageBucket: "reports-511ff.appspot.com",
+            messagingSenderId: "674212981096",
+            appId: "1:674212981096:web:924b3df2c3803e6d9b0edd"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+        const db = getDatabase();
+
+        var enterDate = document.querySelector("#enterDate");
+        var enterLocation = document.querySelector("#enterLocation");
+        var enterName = document.querySelector("#enterName");
+        var enterCompany = document.querySelector("#enterCompany");
+
+        var insertBtn = document.querySelector("#insert");
+
+        // Autofill the date field with the current date
+        const currentDate = new Date().toISOString().split('T')[0];
+        enterDate.value = currentDate;
+
+        function InsertData() {
+            // Check if any of the fields are empty
+            if (!enterLocation.value || !enterName.value || !enterCompany.value) {
+                alert("Please fill in all fields");
+                return;
+            }
+
+            // Get a reference to the "People" node in the database
+            const peopleRef = ref(db, "People");
+
+            // Use push to generate a new unique key for each entry
+            const newEntryRef = push(peopleRef);
+
+            set(newEntryRef, {
+                Date: enterDate.value,
+                Name: enterName.value,
+                Location: enterLocation.value,
+                Company: enterCompany.value
+            })
+            .then(() => {
+                alert("Thank you for submitting!");
+            })
+            .catch((error) => {
+                alert(error);
+            });
+        }
+
+        insertBtn.addEventListener('click', InsertData);
+    </script>
+
+</body>
+
+</html>
